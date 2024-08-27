@@ -283,9 +283,13 @@ class TcpServer(Server):
 
     def _do_run(self):
         """called in a almost-for-ever loop by the server"""
-        # check the status of every socket
-        inputready = select.select(self._sockets, [], [], 1.0)[0]
-
+        try:
+            # check the status of every socket
+            inputready = select.select(self._sockets, [], [], 1.0)[0]
+        except:
+            if len(self._sockets)!=0:
+                self._sockets.pop(0)
+            inputready = select.select(self._sockets, [], [], 1.0)[0]
         # handle data on each a socket
         for sock in inputready:
             try:
